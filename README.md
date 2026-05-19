@@ -56,6 +56,7 @@ Runs on `127.0.0.1` by default — not exposed to your network.
 ## How it works
 
 Deja Vu is three layers: an interface layer (Python, CLI, REST, MCP), a memory engine that extracts and ranks what's worth remembering, and a local SQLite store. Venice handles the LLM calls for extraction and search — everything else runs on your machine.
+<img width="929" height="695" alt="image" src="https://github.com/user-attachments/assets/eb7aed95-eac3-48a8-8fde-fdecfdd8b1e8" />
 
 When you add a memory, the engine asks Venice to pull out durable facts and preferences from the raw text, then writes them to SQLite with embeddings. When you search, it embeds the query, pulls the closest matches, and optionally re-ranks them through Venice for relevance.
 
@@ -109,6 +110,7 @@ Deja Vu writes everything to `~/.dejavu/`:
 ```
 
 The repo itself:
+<img width="538" height="798" alt="image" src="https://github.com/user-attachments/assets/1658bf57-20a0-4560-bf48-dc4338666b25" />
 
 ```
 dejavu/           ← core Python SDK and local memory engine
