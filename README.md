@@ -1,21 +1,14 @@
-﻿# Deja Vu
+# Deja Vu
 
 Local-first AI memory for agents and assistants.
 
-Deja Vu is a small open-source memory layer that helps AI tools remember useful context without locking that context inside one app. It stores memories locally, exposes them through Python, a CLI, a local REST API, and MCP, and uses Venice through an OpenAI-compatible provider interface.
+Your AI tools forget everything between sessions. The ones that don't store your context on someone else's servers. Deja Vu is the third option — a memory layer that runs on your machine, in SQLite, and plugs into anything that speaks Python, REST, CLI, or MCP.
 
-The project is inspired by the ideas in the memory white paper and by the practical developer experience of the original `mem0ai/mem0` GitHub project, with a stronger focus on local ownership, simple setup, and privacy by default.
+**One memory store, every tool.** Add a preference from the CLI, retrieve it in Claude Desktop, query it from a Python agent — same database, no sync, no account. Context built up in one tool is immediately available in the next.
 
-## What It Does
+**Private by default.** Memories live in `~/.dejavu` on your machine. The only thing that leaves is the LLM call itself, routed through Venice's privacy-focused API. No telemetry, no hosted memory service, no vendor lock-in. Open the SQLite file with any client and inspect every byte.
 
-- Saves long-term memories to a local SQLite database
-- Searches memories by user or agent context
-- Works from Python, the command line, REST, or MCP
-- Uses Venice for memory extraction and reasoning
-- Keeps telemetry off
-- Avoids cloud storage by default
-
-## Quick Start
+## Quick start
 
 ```bash
 pip install dejavu-memory
@@ -24,7 +17,17 @@ dejavu add "I prefer concise technical explanations"
 dejavu search "How should responses be written for me?"
 ```
 
-## Python Example
+That's it. Memories are saved to `~/.dejavu/` and searchable immediately.
+
+### Set your Venice API key
+
+Deja Vu uses Venice for memory extraction and reasoning. Get a key at [venice.ai](https://venice.ai) and export it:
+
+```bash
+export VENICE_API_KEY="your-key"
+```
+
+## Python
 
 ```python
 from dejavu import Memory
@@ -36,16 +39,26 @@ results = memory.search("What tools do I prefer?", user_id="local_user")
 print(results)
 ```
 
-## Local API
+## Local REST API
 
 ```bash
 dejavu serve
 curl http://127.0.0.1:8765/health
 ```
 
+Runs on `127.0.0.1` by default — not exposed to your network.
+
+## How it works
+
+Deja Vu is three layers: an interface layer (Python, CLI, REST, MCP), a memory engine that extracts and ranks what's worth remembering, and a local SQLite store. Venice handles the LLM calls for extraction and search — everything else runs on your machine.
+
+When you add a memory, the engine asks Venice to pull out durable facts and preferences from the raw text, then writes them to SQLite with embeddings. When you search, it embeds the query, pulls the closest matches, and optionally re-ranks them through Venice for relevance.
+
+Every interface hits the same engine and the same store. Add a memory through the CLI, retrieve it from Claude Desktop over MCP — same database, no sync.
+
 ## MCP
 
-Deja Vu can run as an MCP server so local agents and editors can share the same memory store.
+Run Deja Vu as an MCP server so local agents and editors share the same memory store.
 
 ```json
 {
@@ -61,9 +74,44 @@ Deja Vu can run as an MCP server so local agents and editors can share the same 
 }
 ```
 
+Drop this into your Claude Desktop, Cursor, or any MCP-compatible client config.
+
+## Interfaces
+
+| Interface | Use it for |
+| --- | --- |
+| Python SDK | Embedding memory directly into agents and scripts |
+| CLI (`dejavu`) | Quick adds, searches, and inspection from the terminal |
+| REST API | Language-agnostic access, local services, internal tools |
+| MCP server | Sharing one memory store across Claude Desktop, Cursor, and other MCP clients |
+
 ## Privacy
 
-Memories are stored under `~/.dejavu` by default. LLM calls go through Venice's API, telemetry is disabled, and there is no hosted memory account required for normal local use.
+- Memories stored locally under `~/.dejavu`
+- No hosted memory account required
+- Telemetry off by default
+- LLM calls go through Venice only
+
+## Project structure
+
+Deja Vu writes everything to `~/.dejavu/`:
+
+```
+~/.dejavu/
+├── config.json   ← Venice key, model choices, local settings
+├── memories.db   ← SQLite store: memories, embeddings, metadata
+└── logs/         ← request logs (off by default, opt-in via config)
+```
+
+The repo itself:
+
+```
+dejavu/           ← core Python SDK and local memory engine
+cli/              ← Python and Node CLIs
+docs/             ← documentation
+examples/         ← demo apps and integration samples
+tests/            ← SDK and interface tests
+```
 
 ## Background
 
@@ -71,4 +119,4 @@ The goal is to make AI memory feel boring and dependable: easy to run, easy to i
 
 ## Attribution
 
-Deja Vu is based on the open-source work from `mem0ai/mem0` and keeps the project under the Apache-2.0 license.
+Deja Vu is based on the open-source work from [`mem0ai/mem0`](https://github.com/mem0ai/mem0) and is licensed under Apache-2.0.
