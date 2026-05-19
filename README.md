@@ -1,5 +1,9 @@
 # Deja Vu
 
+[![Website](https://img.shields.io/badge/website-deja--vu.dev-0f172a?style=flat-square)](https://deja-vu.dev)
+[![X](https://img.shields.io/badge/@useDejaVu-0f172a?style=flat-square&logo=x&logoColor=white)](https://x.com/useDejaVu)
+[![License](https://img.shields.io/badge/license-Apache--2.0-0f172a?style=flat-square)](LICENSE)
+
 Local-first AI memory for agents and assistants.
 
 Your AI tools forget everything between sessions. The ones that don't store your context on someone else's servers. Deja Vu is the third option — a memory layer that runs on your machine, in SQLite, and plugs into anything that speaks Python, REST, CLI, or MCP.
